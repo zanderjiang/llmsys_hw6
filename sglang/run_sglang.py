@@ -30,7 +30,13 @@ def main():
     # TODO: initialize sglang egnine here
     # you may want to explore different args we can pass here to make the inference faster
     # e.g. dp_size, mem_fraction_static
-    llm = None
+    llm = sgl.Engine(
+        model_path=model_path,
+        mem_fraction_static=0.8, #using 2 4090s
+        dp_size=2,
+        constrained_json_backend="xgrammar",
+        attention_backend="flashinfer",
+    )
 
     prompts = []
 
@@ -42,13 +48,16 @@ def main():
     outputs = []
 
     # TODO: you may want to explore different batch_size
-    batch_size = len(prompts) 
+    batch_size = 256
 
     from tqdm import tqdm
     for i in tqdm(range(0, len(prompts), batch_size)):
         # TODO: prepare the batched prompts and use llm.generate
         # save the output in outputs
-        pass
+        batch_prompts = prompts[i:i + batch_size]
+        batch_outputs = llm.generate(batch_prompts, sampling_params)
+        for o in batch_outputs:
+            outputs.append(o["text"])
 
     with open(args.output_file, "w") as f:
         for i in range(0, len(outputs), 10):

@@ -15,7 +15,7 @@ deepspeed main.py \
    --data_split 2,4,4 \
    --model_name_or_path meta-llama/Llama-2-7b-hf \
    --per_device_train_batch_size 1 \
-   --per_device_eval_batch_size 4 \
+   --per_device_eval_batch_size 1 \
    --max_seq_len 512 \
    --learning_rate 9.65e-6 \
    --weight_decay 0. \
@@ -28,5 +28,10 @@ deepspeed main.py \
    --dtype bf16 \
    --zero_stage $ZERO_STAGE \
    --deepspeed \
+   --lora_dim 128 \
+   --lora_module_name "model.layers." \
+   --only_optimize_lora \
+   --lora_learning_rate 5e-4 \
+   --print_loss \
    --output_dir $OUTPUT \
-   #&> $OUTPUT/training.log
+   &> $OUTPUT/training.log
