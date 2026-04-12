@@ -33,9 +33,8 @@ def main():
     llm = sgl.Engine(
         model_path=model_path,
         mem_fraction_static=0.8, #using 2 4090s
-        dp_size=2,
-        constrained_json_backend="xgrammar",
-        attention_backend="flashinfer",
+        tp_size=2,
+        attention_backend="dual_chunk_flash_attn",
     )
 
     prompts = []
@@ -48,7 +47,7 @@ def main():
     outputs = []
 
     # TODO: you may want to explore different batch_size
-    batch_size = 256
+    batch_size = 16
 
     from tqdm import tqdm
     for i in tqdm(range(0, len(prompts), batch_size)):
